@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Handling Board — kiosk designs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@700&display=swap">
+<style>
+  :root{
+    --bg:#e8ebee; --ink:#22303a; --muted:#5c6b76; --frame:#c8d0d6;
+    --panel:#f7f9fa; --accent:#1565C0;
+    /* fixed app palette (the Anvil app is light-only) */
+    --app-bg:#ffffff; --app-ink:#212121; --app-sub:#595959; --app-line:#d9dde0;
+    --blue:#1565C0; --green:#2E7D32; --amber:#EF6C00; --gold:#F9A825; --red:#C62828;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171d22; --ink:#dde5ea; --muted:#93a2ac; --frame:#37424a; --panel:#1f262c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171d22; --ink:#dde5ea; --muted:#93a2ac; --frame:#37424a; --panel:#1f262c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.5 Roboto,system-ui,Arial,sans-serif;padding:28px 20px 60px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font:700 30px/1.2 "Roboto Condensed",Roboto,sans-serif;margin:0 0 4px;text-wrap:balance}
+  .sub{color:var(--muted);margin:0 0 22px;max-width:70ch}
+  .eyebrow{font:700 12px/1 "Roboto Condensed",sans-serif;letter-spacing:.12em;
+           text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+             gap:10px;margin:0 0 34px}
+  .dec{background:var(--panel);border:1px solid var(--frame);border-radius:6px;padding:12px 14px}
+  .dec b{display:block;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+         color:var(--muted);margin-bottom:4px;font-weight:700}
+  .dec span{font-size:14px}
+  section{margin:0 0 46px}
+  h2{font:700 21px/1.25 "Roboto Condensed",Roboto,sans-serif;margin:0 0 4px}
+  .note{color:var(--muted);max-width:78ch;margin:0 0 16px}
+  .pair{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+  .annot{flex:1 1 250px;min-width:250px;max-width:340px}
+  .annot ul{margin:8px 0 0;padding-left:18px}
+  .annot li{margin:0 0 9px}
+  .annot li::marker{color:var(--accent)}
+
+  /* ------- simulated tablet screen (always light, like the app) ------- */
+  .tablet{flex:0 1 560px;min-width:330px;background:var(--app-bg);color:var(--app-ink);
+          border:1px solid var(--frame);border-radius:10px;
+          box-shadow:0 3px 14px rgba(10,25,40,.14);padding:16px 16px 20px}
+  .topbar{border:1px solid var(--app-line);border-radius:4px;padding:10px 12px;
+          display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .topbar .ttl{font-weight:700;font-size:19px}
+  .topbar .who{margin-left:auto;color:var(--app-sub);font-size:13.5px}
+  .obtn{border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:4px;
+        padding:6px 12px;font:500 13px Roboto,sans-serif;cursor:pointer}
+  .cap{font-weight:700;font-size:20px;margin:2px 0 12px}
+  .cap small{font-weight:400;color:var(--app-sub);font-size:13px;display:block}
+
+  .namebtn{display:block;width:100%;border:none;border-radius:4px;background:#fff;
+           box-shadow:0 1px 4px rgba(0,0,0,.22);padding:18px;margin:14px 0;
+           font:500 24px Roboto,sans-serif;color:var(--app-ink);text-align:center}
+
+  .grouphead{display:flex;align-items:baseline;gap:10px;border-bottom:3px solid var(--blue);
+             padding:14px 2px 5px;margin:4px 0 8px}
+  .grouphead .gname{font-weight:700;font-size:20px;color:var(--blue)}
+  .grouphead .gmeta{color:var(--app-sub);font-size:13px;margin-left:auto}
+  .grouphead.unassigned{border-color:#9aa4ab}
+  .grouphead.unassigned .gname{color:#5c6b76}
+
+  .job{border:1px solid var(--app-line);border-radius:4px;padding:12px 14px;margin:0 0 10px;
+       background:#F5F5F5}
+  .job.inprog{background:#FFF8E1}
+  .jr1{display:flex;align-items:baseline;gap:10px}
+  .part{font-weight:700;font-size:24px;color:var(--blue)}
+  .qty{font-weight:700;font-size:22px;margin-left:auto;white-space:nowrap}
+  .jdesc{color:var(--app-sub);font-size:14px;margin:1px 0 4px}
+  .jmeta{font-size:14px;display:flex;gap:14px;flex-wrap:wrap}
+  .jmeta b{font-weight:500}
+  .late{color:var(--red);font-weight:700}
+  .chip{font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:9px;white-space:nowrap}
+  .chip.ready{background:#E3F2FD;color:var(--blue)}
+  .chip.prog{background:#FFF3E0;color:var(--amber)}
+  .steplog{margin:7px 0 0;padding:7px 9px;background:#fff;border-left:3px solid var(--gold);
+           font-size:13.5px;color:#4a4a4a}
+  .steplog b{color:var(--app-ink)}
+  .actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+  .fbtn{border:none;border-radius:4px;background:var(--green);color:#fff;
+        padding:11px 16px;font:500 17px Roboto,sans-serif;cursor:pointer}
+  .fbtn.blue{background:var(--blue)}
+  .ob2{border:1px solid var(--app-sub);color:var(--app-ink);background:#fff;border-radius:4px;
+       padding:10px 14px;font:500 16px Roboto,sans-serif;cursor:pointer}
+  .partial{color:var(--amber);font-weight:700;font-size:14.5px}
+  .probpanel{margin-top:10px;border-top:1px dashed var(--app-line);padding-top:10px}
+  .probpanel .plab{font-size:14px;margin:0 0 6px}
+  .reasons{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}
+  .rsn{border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:4px;
+       padding:8px 12px;font:500 14px Roboto,sans-serif;cursor:pointer}
+  .rsn.sel{background:var(--blue);color:#fff}
+  .qtybox{width:110px;font-size:22px;padding:6px 10px;border:1px solid var(--app-line);
+          border-radius:4px}
+  .notebox{width:100%;font:14px Roboto,sans-serif;padding:8px;border:1px solid var(--app-line);
+           border-radius:4px;margin:8px 0}
+
+  /* option B batch cards */
+  .batch{border:1px solid var(--app-line);border-left:6px solid var(--blue);border-radius:4px;
+         padding:14px;margin:0 0 12px;background:#fff;cursor:pointer}
+  .batch.unassigned{border-left-color:#9aa4ab}
+  .batch .b1{display:flex;align-items:center;gap:10px}
+  .batch .bname{font-weight:700;font-size:22px}
+  .batch .bopen{margin-left:auto}
+  .batch .bmeta{color:var(--app-sub);font-size:14.5px;margin-top:3px}
+  .backrow{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+  [hidden]{display:none!important}
+  .tag{display:inline-block;background:var(--accent);color:#fff;border-radius:3px;
+       font:700 11px/1 "Roboto Condensed",sans-serif;letter-spacing:.1em;
+       padding:4px 8px;text-transform:uppercase;margin:0 0 10px}
+  .samplenote{font-size:12.5px;color:var(--muted);margin-top:10px;font-style:italic}
+  @media (prefers-reduced-motion: no-preference){
+    .batch{transition:box-shadow .15s} .batch:hover{box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="eyebrow">Material Handler kiosk · design review</p>
+<h1>Material Handling Board</h1>
+<p class="sub">Two layouts for the shared-queue kiosk, both in the <b>pick_worker</b> look
+(Hub Transfers v2.1): fat name buttons, card rows, one green action. The queue is grouped by
+the <b>assigned assembler</b> and ordered by each assembler's schedule priority, so an MH can
+pull everything for one assembler in the order they'll build it. Tap an option's cards — the
+drill-in works.</p>
+
+<div class="decisions">
+  <div class="dec"><b>Floor title</b><span>Material Handling Board</span></div>
+  <div class="dec"><b>Queue order</b><span>Grouped by assembler; inside a group, the assembler's own priority order (sched date → priority → due date). Unassigned WOs last.</span></div>
+  <div class="dec"><b>Complete</b><span>✔ COMPLETE ALL in one tap, or PARTIAL / PROBLEM — both go through sp_pc_complete_step; partials leave the step In&nbsp;Progress.</span></div>
+  <div class="dec"><b>Problem flag</b><span>Writes a Problem event + a PC notification. Step status untouched — the job stays in the queue, marked.</span></div>
+</div>
+
+<!-- ============================== NAME PICKER ============================== -->
+<section>
+  <h2>Screen 1 — Tap your name <span class="tag">both options</span></h2>
+  <p class="note">Straight from pick_worker / kiosk_home: one fat button per active MH operator
+  from the shared roster (department = Material Handling). Adding or retiring someone is a
+  roster change, never a form edit.</p>
+  <div class="pair">
+    <div class="tablet">
+      <div class="topbar"><span class="ttl">Material Handling Board</span>
+        <button class="obtn">Refresh</button></div>
+      <div class="cap">Tap your name</div>
+      <button class="namebtn">Marcus Hill</button>
+      <button class="namebtn">Tony Reyes</button>
+      <button class="namebtn">Dale Whitfield</button>
+      <div class="samplenote">Sample names — the MH crew gets seeded through the roster app
+      (MAT1, MAT2…) before go-live.</div>
+    </div>
+    <div class="annot">
+      <ul>
+        <li>Every Complete / Problem event records the tapped operator's code as the actor —
+            that's the whole point of the picker.</li>
+        <li><b>Switch Worker</b> appears in the top bar after a name is chosen.</li>
+        <li>No NavSidebar — single-purpose kiosk, same as the Hub picker tablet.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== OPTION A ============================== -->
+<section>
+  <h2>Option A — One list, assembler section breaks</h2>
+  <p class="note">Everything on one scrolling screen. A blue section rule starts each
+  assembler's batch; cards carry the actions inline. Fewest taps; best when the queue is
+  short (it holds exactly one WO today).</p>
+  <div class="pair">
+    <div class="tablet">
+      <div class="topbar"><span class="ttl">Material Handling Board</span>
+        <span class="who">Working as: <b>Marcus Hill</b></span>
+        <button class="obtn">Switch Worker</button><button class="obtn">Refresh</button></div>
+
+      <div class="grouphead"><span class="gname">Sean Davis</span>
+        <span class="gmeta">2 jobs · pull in this order</span></div>
+
+      <div class="job">
+        <div class="jr1"><span class="part">YS82BC0200</span><span class="qty">QTY 16</span></div>
+        <div class="jdesc">SS T304 · 100 MESH LINED</div>
+        <div class="jmeta"><b>WO-2026-534410</b><span>SO 597323 · L5</span>
+          <span class="late">Due 06/08/26</span><span class="chip ready">READY</span></div>
+        <div class="steplog"><b>Step notes:</b> Liner ships loose — bag separately with the WO copy.</div>
+        <div class="actions">
+          <button class="fbtn">✔ COMPLETE ALL 16</button>
+          <button class="ob2">PARTIAL / PROBLEM</button>
+        </div>
+      </div>
+
+      <div class="job inprog">
+        <div class="jr1"><span class="part">CS52F0300</span><span class="qty">QTY 8</span></div>
+        <div class="jdesc">CARBON STEEL · STD SCREEN</div>
+        <div class="jmeta"><b>WO-2026-534466</b><span>SO 597401 · L2</span>
+          <span>Due 09/18/26</span><span class="chip prog">IN PROGRESS — 6 of 8</span></div>
+        <div class="actions">
+          <button class="fbtn">✔ COMPLETE LAST 2</button>
+          <button class="ob2">PARTIAL / PROBLEM</button>
+          <span class="partial">⚠ Problem 09/03: parts shortage (Tony R.)</span>
+        </div>
+      </div>
+
+      <div class="grouphead"><span class="gname">Kevin Risen</span>
+        <span class="gmeta">1 job</span></div>
+
+      <div class="job">
+        <div class="jr1"><span class="part">YS12TC0150</span><span class="qty">QTY 40</span></div>
+        <div class="jdesc">SS T316 · BASKET ONLY</div>
+        <div class="jmeta"><b>WO-2026-534502</b><span>SO 597455 · L1</span>
+          <span>Due 09/25/26</span><span class="chip ready">READY</span></div>
+        <div class="actions">
+          <button class="fbtn">✔ COMPLETE ALL 40</button>
+          <button class="ob2">PARTIAL / PROBLEM</button>
+        </div>
+      </div>
+
+      <div class="grouphead unassigned"><span class="gname">Not yet assigned</span>
+        <span class="gmeta">1 job · due order</span></div>
+
+      <div class="job">
+        <div class="jr1"><span class="part">FB31X0200</span><span class="qty">QTY 12</span></div>
+        <div class="jdesc">DUCTILE IRON · GASKET ONLY</div>
+        <div class="jmeta"><b>WO-2026-534510</b><span>SO 597460 · L3</span>
+          <span>Due 10/02/26</span><span class="chip ready">READY</span></div>
+        <div class="actions">
+          <button class="fbtn">✔ COMPLETE ALL 12</button>
+          <button class="ob2">PARTIAL / PROBLEM</button>
+        </div>
+      </div>
+      <div class="samplenote">WO-2026-534410 is the live trigger case; the other rows are
+      samples to show grouping.</div>
+    </div>
+    <div class="annot">
+      <ul>
+        <li>Group order = whoever's top job is most urgent comes first; <b>unassigned WOs sit
+            last</b>, in due-date order.</li>
+        <li>Red due date = past due. Amber card = partially completed step
+            (sp_pc_complete_step accumulates quantity).</li>
+        <li>A flagged problem shows on the card until the step completes, with who flagged it.</li>
+        <li>Step notes render right on the card (your notes-viewer pick).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== OPTION B ============================== -->
+<section>
+  <h2>Option B — Assembler batches, then drill in <span class="tag">tap a card</span></h2>
+  <p class="note">Faithful to pick_worker's pick-list flow: the queue screen shows one card per
+  assembler (a "pull batch"), and opening it shows only that assembler's jobs. Cleaner when the
+  queue grows; one extra tap per batch.</p>
+  <div class="pair">
+    <div class="tablet" id="optB">
+      <div class="topbar"><span class="ttl">Material Handling Board</span>
+        <span class="who">Working as: <b>Marcus Hill</b></span>
+        <button class="obtn">Switch Worker</button><button class="obtn">Refresh</button></div>
+
+      <div id="bList">
+        <div class="cap">Pull batches <small>one per assembler, most urgent first</small></div>
+        <div class="batch" onclick="openBatch(true)">
+          <div class="b1"><span class="bname">Sean Davis</span>
+            <button class="fbtn blue bopen">OPEN</button></div>
+          <div class="bmeta">2 jobs · 24 pcs · next due <b style="color:var(--red)">06/08/26</b> · ⚠ 1 problem</div>
+        </div>
+        <div class="batch" onclick="openBatch(true)">
+          <div class="b1"><span class="bname">Kevin Risen</span>
+            <button class="fbtn blue bopen">OPEN</button></div>
+          <div class="bmeta">1 job · 40 pcs · next due 09/25/26</div>
+        </div>
+        <div class="batch unassigned" onclick="openBatch(true)">
+          <div class="b1"><span class="bname">Not yet assigned</span>
+            <button class="fbtn blue bopen">OPEN</button></div>
+          <div class="bmeta">1 job · 12 pcs · next due 10/02/26</div>
+        </div>
+      </div>
+
+      <div id="bDetail" hidden>
+        <div class="backrow"><button class="obtn" onclick="openBatch(false)">← All batches</button>
+          <span class="cap" style="margin:0">Sean Davis — pull in this order</span></div>
+
+        <div class="job">
+          <div class="jr1"><span class="part">YS82BC0200</span><span class="qty">QTY 16</span></div>
+          <div class="jdesc">SS T304 · 100 MESH LINED</div>
+          <div class="jmeta"><b>WO-2026-534410</b><span>SO 597323 · L5</span>
+            <span class="late">Due 06/08/26</span><span class="chip ready">READY</span></div>
+          <div class="steplog"><b>Step notes:</b> Liner ships loose — bag separately with the WO copy.</div>
+          <div class="actions">
+            <button class="fbtn">✔ COMPLETE ALL 16</button>
+            <button class="ob2" onclick="togglePanel(this)">PARTIAL / PROBLEM</button>
+          </div>
+          <div class="probpanel" hidden>
+            <p class="plab"><b>Quantity moved</b> (leave as-is if the problem stops everything):</p>
+            <input class="qtybox" type="number" value="16">
+            <p class="plab" style="margin-top:10px"><b>Problem?</b> Tap a reason — this flags the
+            job for Production Control and keeps it in the queue:</p>
+            <div class="reasons">
+              <button class="rsn" onclick="pick(this)">Parts shortage</button>
+              <button class="rsn" onclick="pick(this)">Can't locate</button>
+              <button class="rsn" onclick="pick(this)">Damaged</button>
+              <button class="rsn" onclick="pick(this)">Other</button>
+            </div>
+            <input class="notebox" placeholder="Note (optional — goes on the event)">
+            <div class="actions" style="margin-top:2px">
+              <button class="fbtn">SAVE</button>
+              <button class="ob2" onclick="togglePanel(this)">CANCEL</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job inprog">
+          <div class="jr1"><span class="part">CS52F0300</span><span class="qty">QTY 8</span></div>
+          <div class="jdesc">CARBON STEEL · STD SCREEN</div>
+          <div class="jmeta"><b>WO-2026-534466</b><span>SO 597401 · L2</span>
+            <span>Due 09/18/26</span><span class="chip prog">IN PROGRESS — 6 of 8</span></div>
+          <div class="actions">
+            <button class="fbtn">✔ COMPLETE LAST 2</button>
+            <button class="ob2">PARTIAL / PROBLEM</button>
+            <span class="partial">⚠ Problem 09/03: parts shortage (Tony R.)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annot">
+      <ul>
+        <li>Batch card = MyPickRow: name, job count, piece count, next due, problem badge;
+            urgency stripe on the left edge.</li>
+        <li>The first job's <b>PARTIAL / PROBLEM</b> panel is opened here to show the flow:
+            adjust the quantity, or tap a reason (or both — "moved 6, then ran short").</li>
+        <li>Qty &gt; 0 → sp_pc_complete_step as a partial; reason picked → Problem event +
+            PC notification. Confirm dialog before anything writes.</li>
+        <li>COMPLETE ALL asks "Complete YS82BC0200 — all 16?" then writes; the Ready cascade
+            flips Assemble and the WO lands on the supervisor board by itself.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<p class="note" style="margin-top:-14px">Both options share every screen and mechanic except
+the queue layout — so this is one decision: <b>A (one list)</b> or <b>B (batch drill-in)</b>.
+Mixes are easy too (e.g. B's batch cards with A's inline problem badge).</p>
+
+</div>
+<script>
+function openBatch(show){
+  document.getElementById('bList').hidden = show;
+  document.getElementById('bDetail').hidden = !show;
+}
+function togglePanel(btn){
+  var card = btn.closest('.job');
+  var p = card.querySelector('.probpanel');
+  if (p) p.hidden = !p.hidden;
+}
+function pick(b){
+  b.closest('.reasons').querySelectorAll('.rsn').forEach(function(x){x.classList.remove('sel');});
+  b.classList.add('sel');
+}
+</script>
+</body>
+</html>
