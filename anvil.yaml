@@ -4,6 +4,7 @@ native_deps:
     <style>
       .anvil-panel-section-container { padding: 0 15px; }
     </style>
+package_name: new
 runtime_options:
   client_version: '2'
   server_spec: {}
